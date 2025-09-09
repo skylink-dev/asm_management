@@ -1,0 +1,49 @@
+# Django framework for building the web application
+Django>=4.2,<5.0
+
+# PostgreSQL database adapter for Django
+psycopg2-binary>=2.9
+
+# Jazzmin admin panel theme for Django Admin
+# Note: Supports Python <= 3.12. Comment out if using Python 3.13
+jazzmin==3.3.7
+
+# Environment variables support (like .env files)
+python-dotenv>=1.0
+
+# Extra management commands & tools for Django
+django-extensions>=3.3
+
+# Django REST framework for building APIs
+djangorestframework>=3.14
+
+# Handle Cross-Origin Resource Sharing (CORS) for APIs
+django-cors-headers>=4.0
+
+# Improved form rendering for Django
+django-crispy-forms>=2.0
+crispy-bootstrap5>=0.7  # Bootstrap 5 templates for crispy forms
+
+# Background task queue using Celery
+celery>=5.3
+django-celery-beat>=2.4       # Schedule periodic tasks
+django-celery-results>=2.5    # Store Celery task results
+
+# JWT authentication support for Django REST framework
+djangorestframework-simplejwt>=6.1
+
+# Image handling library
+Pillow>=10.0
+
+# Debug toolbar for development
+django-debug-toolbar>=4.0
+
+# Testing frameworks
+pytest>=8.0
+pytest-django>=4.5
+
+# Redis caching backend for Django
+django-redis>=6.2
+
+# Email integration (e.g., Mailgun)
+django-anymail[mailgun]>=9.4

@@ -1,0 +1,55 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyo
+*.pyd
+*.swp
+*.swo
+
+# Virtual environment
+venv/
+env/
+ENV/
+.venv/
+.env/
+
+# Django
+*.log
+*.sqlite3
+db.sqlite3
+media/
+staticfiles/
+*.pot
+*.mo
+*.cover
+.coverage
+htmlcov/
+.py,cover
+.pytest_cache/
+.mypy_cache/
+
+# Django local settings
+local_settings.py
+asm_management/settings.py  # sensitive info
+
+# Node / NPM / frontend (if used)
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# IDEs / Editors
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# OS generated
+.DS_Store
+Thumbs.db
+
+# dotenv files
+.env
+
+# Celery beat schedule file
+celerybeat-schedule
