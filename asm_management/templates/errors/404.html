@@ -1,0 +1,14 @@
+{% extends "errors/base_error.html" %}
+
+{% block content %}
+<div class="error-container">
+    <h1 class="error-code">404</h1>
+    <p class="error-message">Page Not Found</p>
+    <p class="error-detail">The page you are looking for doesn't exist or has been moved.</p>
+    {% if request_path %}
+        <p class="error-path">Requested path: {{ request_path }}</p>
+    {% endif %}
+    <a href="/" class="home-button">Go to Homepage</a>
+    <a href="javascript:history.back()" class="home-button" style="background-color: #6c757d; margin-left: 10px;">Go Back</a>
+</div>
+{% endblock %}
