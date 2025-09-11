@@ -9,7 +9,7 @@ https://docs.djangoproject.com/en/4.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
-
+from datetime import timedelta
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -25,23 +25,30 @@ SECRET_KEY = 'django-insecure-f^+5#e2$%hsu)d3*p!yv(=(2(9m)=g3q3st+x&9otr#2+y-q%z
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+
+# SECURITY WARNING: don't run with debug turned on in production!
+ALLOWED_HOSTS = ["*"]
 
 
 # Application definition
 
 INSTALLED_APPS = [
-    "jazzmin",
+     "jazzmin",
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-     "master",
+    "rest_framework",
+    'rest_framework_simplejwt',
+    'corsheaders',
+    "master",
+    "asm",
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -72,6 +79,74 @@ TEMPLATES = [
 WSGI_APPLICATION = 'asm_management.wsgi.application'
 
 
+# REST Framework settings
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ),
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated',
+    ],
+    'DEFAULT_RENDERER_CLASSES': [
+        'rest_framework.renderers.JSONRenderer',
+    ],
+}
+
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
+    'ROTATE_REFRESH_TOKENS': True,
+    'BLACKLIST_AFTER_ROTATION': True,
+}
+
+
+# CORS settings for React
+# CORS_ALLOWED_ORIGINS = [
+#     "http://localhost:3000",  # React dev server
+#     "http://127.0.0.1:3000",
+#     "*",
+# ]
+# CORS_ALLOWED_ORIGINS = ["*"]
+CORS_ALLOW_ALL_ORIGINS = True  # This allows all origins (for development only)
+
+# Alternatively, specify exact origins (recommended for production)
+# CORS_ALLOWED_ORIGINS = [
+#     "http://localhost:3000",
+#     "http://127.0.0.1:3000",
+#     "http://0.0.0.0:3000",
+#     # Add your external IP or domain here
+# ]
+
+# CSRF settings for external access
+CSRF_TRUSTED_ORIGINS = [
+    "http://localhost:3000",
+    "http://127.0.0.1:3000",
+    "http://0.0.0.0:3000",
+    # Add your external IP or domain here
+    # Example: "http://your-server-ip:8000",
+]
+
+# Additional CORS settings
+CORS_ALLOW_HEADERS = [
+    'accept',
+    'accept-encoding',
+    'authorization',
+    'content-type',
+    'dnt',
+    'origin',
+    'user-agent',
+    'x-csrftoken',
+    'x-requested-with',
+]
+
+CORS_ALLOW_METHODS = [
+    'DELETE',
+    'GET',
+    'OPTIONS',
+    'PATCH',
+    'POST',
+    'PUT',
+]
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
@@ -80,9 +155,9 @@ DATABASES = {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'asm_management',     # Database name (same as you created in pgAdmin)
         'USER': 'postgres',           # Default PostgreSQL user
-        'PASSWORD': 'Admin@123',  # Password you set during installation
+        'PASSWORD': 'postgres',  # Password you set during installation
         'HOST': 'localhost',          # Database host
-        'PORT': '5433',               # Default PostgreSQL port
+        'PORT': '5432',               # Default PostgreSQL port
     }
 }
 

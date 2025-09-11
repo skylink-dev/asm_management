@@ -28,7 +28,7 @@ class State(models.Model):
 
 
 class District(models.Model):
-    name = models.CharField(max_length=100, default="Unknown District")
+    name = models.CharField(max_length=100, blank= False, null=False, unique=True)
     code = models.CharField(max_length=20, default="D001")
     state = models.ForeignKey(State, on_delete=models.CASCADE, related_name="districts", default=1)
     description = models.TextField(blank=True, null=True, default="No description")

@@ -1,6 +1,14 @@
 from django.contrib import admin
 from .models import Zone, State, District, Taluk
 
+
+
+
+
+
+
+
+
 @admin.register(Zone)
 class ZoneAdmin(admin.ModelAdmin):
     list_display = ('id', 'name', 'code', 'description')

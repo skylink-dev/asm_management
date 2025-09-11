@@ -17,6 +17,13 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 
+from asm.views import ASMLoginAPIView, RefreshTokenView, LogoutView
+
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('api/refresh-token/',RefreshTokenView.as_view() , name='asm-refresh-token'),
+    path('api/login/', ASMLoginAPIView.as_view(), name='asm-login'),
+    path('api/logout/', LogoutView.as_view(), name='asm-logout'),
+
+    # path("api/register/", , name="asm-register")
 ]
