@@ -1,6 +1,16 @@
 from django.contrib import admin
 from .models import Zone, State, District, Taluk
 
+from django.contrib import admin
+from import_export.admin import ImportExportModelAdmin
+from .models import PincodeData
+
+@admin.register(PincodeData)
+class PincodeDataAdmin(ImportExportModelAdmin):
+    list_display = ("officename", "pincode", "district", "statename", "officetype", "delivery")
+    search_fields = ("officename", "pincode", "district", "statename")
+    list_filter = ("statename", "district", "officetype", "delivery")
+
 @admin.register(Zone)
 class ZoneAdmin(admin.ModelAdmin):
     list_display = ('id', 'name', 'code', 'description')
@@ -30,3 +40,9 @@ class TalukAdmin(admin.ModelAdmin):
     search_fields = ('name', 'code', 'district__name')
     list_filter = ('district',)
     list_per_page = 20
+
+
+
+
+
+

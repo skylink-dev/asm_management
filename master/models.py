@@ -1,5 +1,25 @@
 from django.db import models
 
+
+class PincodeData(models.Model):
+    circlename = models.CharField(max_length=100, default="", blank=True)
+    regionname = models.CharField(max_length=100, default="", blank=True)
+    divisionname = models.CharField(max_length=100, default="", blank=True)
+    officename = models.CharField(max_length=150, default="", blank=True)
+    pincode = models.CharField(max_length=10, default="", blank=True)
+    officetype = models.CharField(max_length=50, default="", blank=True)
+    delivery = models.CharField(max_length=50, default="", blank=True)
+    district = models.CharField(max_length=100, default="", blank=True)
+    statename = models.CharField(max_length=100, default="", blank=True)
+    latitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True, default=0.0)
+    longitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True, default=0.0)
+
+    def __str__(self):
+        return f"{self.officename} ({self.pincode})"
+
+
+
+
 class Zone(models.Model):
     name = models.CharField(max_length=100, unique=True, default="Unknown Zone")
     code = models.CharField(max_length=20, unique=True, default="Z001")
