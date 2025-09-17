@@ -21,4 +21,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path("chaining/", include("smart_selects.urls")),
       path('zonemanager/', include('zonemanager.urls')),
+      path('asm/', include('asm.urls')),
+      path('partner/', include('partner.urls')),
+      
 ]

@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-f^+5#e2$%hsu)d3*p!yv(=(2(9m)=g3q3st+x&9otr#2+y-q%z
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -45,6 +45,8 @@ INSTALLED_APPS = [
        'smart_selects',
          'dal',
     'dal_select2',
+    'asm',
+    'partner'
      
 ]
 USE_DJANGO_JQUERY = True
@@ -135,3 +137,37 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+
+
+JAZZMIN_SETTINGS = {
+    "site_title": "Skylink Admin",
+    "site_header": "Skylink Admin Panel",
+    "site_brand": "Skylink",
+    "welcome_sign": "Welcome to Skylink Admin",
+    "search_model": "auth.User",
+
+    # 🔹 App order
+    "order_with_respect_to": ["zonemanager", "asm", "partner", "master", "auth"],
+
+    # 🔹 Custom icons (optional)
+    "icons": {
+        "auth": "fas fa-users-cog",
+        "asm": "fas fa-user-tie",
+        "zonemanager": "fas fa-user-shield",
+        "master": "fas fa-cogs",
+    },
+
+    # 🔹 Navigation tweaks (optional)
+    "show_ui_builder": True,
+}
+
+
+JAZZMIN_SETTINGS.update({
+    "model_icons": {
+        "asm.ASM": "fas fa-user-tie",
+        "zonemanager.ZoneManager": "fas fa-user-shield",
+    },
+    "hide_apps": [],
+    "hide_models": [],
+})

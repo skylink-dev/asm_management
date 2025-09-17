@@ -4,24 +4,19 @@ from dal import autocomplete
 from .models import ZoneManager
 from master.models import State, District, Office
 
-class ZoneManagerForm(forms.ModelForm):
-    districts = forms.ModelMultipleChoiceField(
-        queryset=District.objects.all(),
-        widget=autocomplete.ModelSelect2Multiple(
-            url='district-autocomplete',
-            forward=['states']
-        ),
-        required=False
-    )
-    offices = forms.ModelMultipleChoiceField(
-        queryset=Office.objects.all(),
-        widget=autocomplete.ModelSelect2Multiple(
-            url='office-autocomplete',
-            forward=['districts']
-        ),
-        required=False
-    )
 
+class ZoneManagerForm(forms.ModelForm):
     class Meta:
         model = ZoneManager
-        fields = '__all__'
+        fields = ['user', 'group', 'states', 'districts', 'offices']
+
+        widgets = {
+            'districts': autocomplete.ModelSelect2Multiple(
+                url='district-autocomplete',
+                forward=['states']
+            ),
+            'offices': autocomplete.ModelSelect2Multiple(
+                url='office-autocomplete',
+                forward=['districts']
+            ),
+        }

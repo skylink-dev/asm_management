@@ -54,3 +54,16 @@ class Office(models.Model):
 
     def __str__(self):
         return f"{self.name} ({self.pincode})"
+    
+
+
+    # 🔹 Target categories
+class TargetCategory(models.TextChoices):
+    APPLICATION = "Application", "Application"
+    POP = "POP", "POP"
+    ESIGN = "E-Sign", "E-Sign"
+    NEW_TALUK = "New Taluk", "New Taluk"
+    NEW_LIVE_PARTNERS = "New Live Partners", "New Live Partners"
+    ACTIVATIONS = "Activations", "Activations"
+    CALLS = "Calls", "Calls"
+    SD_COLLECTION = "SD Collection", "SD Collection (Rs)"
