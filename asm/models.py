@@ -6,6 +6,15 @@ from smart_selects.db_fields import ChainedManyToManyField
 from zonemanager.models import ZMDailyTarget
 from django.utils import timezone
 
+class Role(models.Model):
+    name = models.CharField(max_length=120)
+    isActive= models.BooleanField(default=True)
+    permission= models.ManyToManyField(Group, related_name="roles", )
+
+    def __str__(self):
+        return self.name
+
+
 
 class ASM(models.Model):
     user = models.OneToOneField(
@@ -44,8 +53,18 @@ class ASM(models.Model):
         blank=True,
         related_name="asms"
     )
+    email = models.EmailField(null=True, blank=True)
+    mobile = models.CharField(max_length=10, null=True, blank=True)
+    isActive = models.BooleanField(default=True)
+    last_login = models.DateTimeField(auto_now=True)
+    last_password_change = models.DateTimeField(auto_now=True)
+    otp_allowed = models.BooleanField(default=False)
+    otp_generated_time = models.DateTimeField(auto_now=True)
+    otp_used = models.BooleanField(default=False)
+    otp = models.CharField(default="", null=True, blank=True)
 
-    def __str__(self):
+
+def __str__(self):
         return f"{self.user.username} ({self.zone_manager.user.username})"
 
 

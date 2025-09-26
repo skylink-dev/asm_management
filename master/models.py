@@ -1,6 +1,8 @@
 from django.db import models
 
 
+
+
 class PincodeData(models.Model):
     circlename = models.CharField(max_length=100, default="", blank=True)
     regionname = models.CharField(max_length=100, default="", blank=True)

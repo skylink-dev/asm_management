@@ -9,7 +9,7 @@ https://docs.djangoproject.com/en/4.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
-
+from datetime import timedelta
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -31,27 +31,31 @@ ALLOWED_HOSTS = ['*']
 # Application definition
 
 INSTALLED_APPS = [
-    "jazzmin",
-      
+    "jazzmin", # unable t o find the package error
+    'corsheaders',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    "rest_framework",
+    "rest_framework.authtoken",
      "master",
-     'import_export',
-     'zonemanager',
-       'smart_selects',
-         'dal',
+    'import_export',
+    'zonemanager',
+    'smart_selects',
+    'dal',
     'dal_select2',
     'asm',
-    'partner'
+    'partner',
+    'api'
      
 ]
 USE_DJANGO_JQUERY = True
 
 MIDDLEWARE = [
+    "corsheaders.middleware.CorsMiddleware",
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -60,6 +64,8 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+
+CORS_ALLOW_ALL_ORIGINS = True
 
 ROOT_URLCONF = 'asm_management.urls'
 
@@ -82,17 +88,52 @@ TEMPLATES = [
 WSGI_APPLICATION = 'asm_management.wsgi.application'
 
 
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ),
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated',
+    ],
+    'DEFAULT_RENDERER_CLASSES': [
+        'rest_framework.renderers.JSONRenderer',
+    ],
+}
+
+
+JWT_SECRET_KEY= 'django-insecure-&9@4j#y&9@4j#y'
+JWT_ALGORITHM = "HS256"
+SIMPLE_JWT = {
+    "ALGORITHM": JWT_ALGORITHM,
+    "SIGNING_KEY": JWT_SECRET_KEY,
+    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=30),
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=7),
+}
+
+
+
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
+
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'NAME': 'asm_management',     # Database name (same as you created in pgAdmin)
+#         'USER': 'postgres',           # Default PostgreSQL user
+#         'PASSWORD': 'postgres',  # Password you set during installation
+#         'HOST': 'localhost',          # Database host
+#         'PORT': '5433',               # Default PostgreSQL port
+#     }
+# }
 
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'asm_management',     # Database name (same as you created in pgAdmin)
+        'NAME': 'asm_management_arul',     # Database name (same as you created in pgAdmin)
         'USER': 'postgres',           # Default PostgreSQL user
-        'PASSWORD': 'Admin@123',  # Password you set during installation
+        'PASSWORD': 'postgres',  # Password you set during installation
         'HOST': 'localhost',          # Database host
-        'PORT': '5433',               # Default PostgreSQL port
+        'PORT': '5432',               # Default PostgreSQL port
     }
 }
 
