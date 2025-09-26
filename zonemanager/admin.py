@@ -2,6 +2,7 @@ from django.contrib import admin
 from django.utils.html import format_html
 from .models import ZoneManager, ZMDailyTarget
 from .forms import ZoneManagerForm
+from dal import autocomplete
 
 @admin.register(ZoneManager)
 class ZoneManagerAdmin(admin.ModelAdmin):
@@ -14,6 +15,7 @@ class ZoneManagerAdmin(admin.ModelAdmin):
         "get_offices",
         "action_links",  # Include the custom edit/delete column here
     )
+    search_fields = ["user__first_name", "user__last_name"]
     search_fields = (
         "user__first_name",
         "user__last_name",

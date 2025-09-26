@@ -15,6 +15,12 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.authtoken.models import Token
 
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status, permissions
+from .models import UserProfile
+from .serializer import UserProfileSerializer
+
 class UploadAndProcessFileAPI(APIView):
     def post(self, request, *args, **kwargs):
         serializer = UploadFileSerializer(data=request.data)
@@ -222,3 +228,23 @@ class LogoutView(APIView):
         response = Response({"message": "Logout successful"}, status=status.HTTP_200_OK)
         response.delete_cookie("refresh_token")
         return response
+
+
+
+
+
+class UserProfileAPI(APIView):
+    """
+    API to get the UserProfile of the currently logged-in user
+    """
+    permission_classes = [permissions.IsAuthenticated]  # Only logged-in users can access
+
+    def get(self, request):
+        try:
+            profile = UserProfile.objects.get(user=request.user)
+        except UserProfile.DoesNotExist:
+            return Response({"detail": "UserProfile not found"}, status=status.HTTP_404_NOT_FOUND)
+
+        serializer = UserProfileSerializer(profile)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+

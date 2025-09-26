@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-f^+5#e2$%hsu)d3*p!yv(=(2(9m)=g3q3st+x&9otr#2+y-q%z
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ["*"]
 
 
 # Application definition
@@ -49,7 +49,7 @@ INSTALLED_APPS = [
     'dal_select2',
     'asm',
     'partner',
-    'api'
+    'api',
      
 ]
 USE_DJANGO_JQUERY = True

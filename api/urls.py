@@ -1,7 +1,7 @@
 from django.urls import path
 
 from api.serializer import LoginSerializer
-from api.views import UploadAndProcessFileAPI, ASMRegisterAPI, LoginView, LogoutView
+from api.views import UploadAndProcessFileAPI, ASMRegisterAPI, LoginView, LogoutView, UserProfileAPI
 from asm.views import ASMLoginAPIView, RefreshTokenView, UserListView
 
 urlpatterns = [
@@ -15,4 +15,6 @@ urlpatterns = [
     path('users', UserListView.as_view(), name='user-list'),
 
     path('register', ASMRegisterAPI.as_view()),
+
+    path('profile', UserProfileAPI.as_view()),
 ]

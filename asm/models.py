@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User, Group
+
 from master.models import State, District, Office
 from zonemanager.models import ZoneManager
 from smart_selects.db_fields import ChainedManyToManyField
@@ -53,15 +54,15 @@ class ASM(models.Model):
         blank=True,
         related_name="asms"
     )
-    email = models.EmailField(null=True, blank=True)
-    mobile = models.CharField(max_length=10, null=True, blank=True)
-    isActive = models.BooleanField(default=True)
-    last_login = models.DateTimeField(auto_now=True)
-    last_password_change = models.DateTimeField(auto_now=True)
-    otp_allowed = models.BooleanField(default=False)
-    otp_generated_time = models.DateTimeField(auto_now=True)
-    otp_used = models.BooleanField(default=False)
-    otp = models.CharField(default="", null=True, blank=True)
+    # email = models.EmailField(null=True, blank=True)
+    # mobile = models.CharField(max_length=10, null=True, blank=True)
+    # isActive = models.BooleanField(default=True)
+    # last_login = models.DateTimeField(auto_now=True)
+    # last_password_change = models.DateTimeField(auto_now=True)
+    # otp_allowed = models.BooleanField(default=False)
+    # otp_generated_time = models.DateTimeField(auto_now=True)
+    # otp_used = models.BooleanField(default=False)
+    # otp = models.CharField(default="", null=True, blank=True)
 
 
 def __str__(self):

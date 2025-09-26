@@ -8,6 +8,7 @@ from .models import ASMDailyTarget
 @admin.register(ASM)
 class ASMAdmin(admin.ModelAdmin):
     form = ASMForm
+    autocomplete_fields = ["zone_manager"]
     list_display = (
         "full_name",
         "zone_manager_name",
