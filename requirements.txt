@@ -6,7 +6,7 @@ psycopg2-binary>=2.9
 
 # Jazzmin admin panel theme for Django Admin
 # Note: Supports Python <= 3.12. Comment out if using Python 3.13
-jazzmin==3.3.7
+#jazzmin==3.3.7
 
 # Environment variables support (like .env files)
 python-dotenv>=1.0

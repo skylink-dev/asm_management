@@ -9,7 +9,7 @@ https://docs.djangoproject.com/en/4.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
-
+from datetime import timedelta
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -25,23 +25,37 @@ SECRET_KEY = 'django-insecure-f^+5#e2$%hsu)d3*p!yv(=(2(9m)=g3q3st+x&9otr#2+y-q%z
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["*"]
 
 
 # Application definition
 
 INSTALLED_APPS = [
-    "jazzmin",
+    "jazzmin", # unable t o find the package error
+    'corsheaders',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    "rest_framework",
+    "rest_framework.authtoken",
      "master",
+    'import_export',
+    'zonemanager',
+    'smart_selects',
+    'dal',
+    'dal_select2',
+    'asm',
+    'partner',
+    'api',
+     
 ]
+USE_DJANGO_JQUERY = True
 
 MIDDLEWARE = [
+    "corsheaders.middleware.CorsMiddleware",
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -50,6 +64,8 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+
+CORS_ALLOW_ALL_ORIGINS = True
 
 ROOT_URLCONF = 'asm_management.urls'
 
@@ -72,17 +88,52 @@ TEMPLATES = [
 WSGI_APPLICATION = 'asm_management.wsgi.application'
 
 
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ),
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated',
+    ],
+    'DEFAULT_RENDERER_CLASSES': [
+        'rest_framework.renderers.JSONRenderer',
+    ],
+}
+
+
+JWT_SECRET_KEY= 'django-insecure-&9@4j#y&9@4j#y'
+JWT_ALGORITHM = "HS256"
+SIMPLE_JWT = {
+    "ALGORITHM": JWT_ALGORITHM,
+    "SIGNING_KEY": JWT_SECRET_KEY,
+    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=30),
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=7),
+}
+
+
+
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
+
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'NAME': 'asm_management',     # Database name (same as you created in pgAdmin)
+#         'USER': 'postgres',           # Default PostgreSQL user
+#         'PASSWORD': 'postgres',  # Password you set during installation
+#         'HOST': 'localhost',          # Database host
+#         'PORT': '5433',               # Default PostgreSQL port
+#     }
+# }
 
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'asm_management',     # Database name (same as you created in pgAdmin)
+        'NAME': 'asm_management_arul',     # Database name (same as you created in pgAdmin)
         'USER': 'postgres',           # Default PostgreSQL user
-        'PASSWORD': 'Admin@123',  # Password you set during installation
+        'PASSWORD': 'postgres',  # Password you set during installation
         'HOST': 'localhost',          # Database host
-        'PORT': '5433',               # Default PostgreSQL port
+        'PORT': '5432',               # Default PostgreSQL port
     }
 }
 
@@ -127,3 +178,37 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+
+
+JAZZMIN_SETTINGS = {
+    "site_title": "Skylink Admin",
+    "site_header": "Skylink Admin Panel",
+    "site_brand": "Skylink",
+    "welcome_sign": "Welcome to Skylink Admin",
+    "search_model": "auth.User",
+
+    # 🔹 App order
+    "order_with_respect_to": ["zonemanager", "asm", "partner", "master", "auth"],
+
+    # 🔹 Custom icons (optional)
+    "icons": {
+        "auth": "fas fa-users-cog",
+        "asm": "fas fa-user-tie",
+        "zonemanager": "fas fa-user-shield",
+        "master": "fas fa-cogs",
+    },
+
+    # 🔹 Navigation tweaks (optional)
+    "show_ui_builder": True,
+}
+
+
+JAZZMIN_SETTINGS.update({
+    "model_icons": {
+        "asm.ASM": "fas fa-user-tie",
+        "zonemanager.ZoneManager": "fas fa-user-shield",
+    },
+    "hide_apps": [],
+    "hide_models": [],
+})
