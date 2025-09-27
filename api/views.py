@@ -20,6 +20,8 @@ from zonemanager.serializer import ZoneManagerSerializer
 from .models import UserProfile
 from .serializer import UserProfileSerializer
 from zonemanager.models import ZoneManager
+from asm.serializers import ASMSerializer
+from asm.models import ASM
 
 class UploadAndProcessFileAPI(APIView):
     def post(self, request, *args, **kwargs):
@@ -271,7 +273,35 @@ class UserProfileAPI(APIView):
                     "designation": serializer.data["designation"],
                     "employee_status": serializer.data["employee_status"]
                 }
-
+        if request.user.groups.filter(name__iexact='Area Sales Manager').exists():
+            try:
+                asm_manager = ASM.objects.get(user=request.user)
+                if not asm_manager:
+                    asm_serializer = ASMSerializer(asm_manager)
+                    response_data = {
+                        "role_id": asm_serializer.data["id"],
+                        "zone_manager": asm_serializer.data["zone_manager"],
+                        "states": asm_serializer.data["states"],
+                        "offices": asm_serializer.data["offices"],
+                        "districts": asm_serializer.data["districts"],
+                        "user_id": serializer.data["user"]["id"],
+                        "username": serializer.data["user"]["username"],
+                        "name": serializer.data["user"]["full_name"],
+                        "email": serializer.data["user"]["email"],
+                        "role": serializer.data["user"]["groups"][0],
+                        "employee_id": serializer.data["employee_id"],
+                        "phone": serializer.data["phone"],
+                        "address": serializer.data["address"],
+                        "date_of_birth": serializer.data["date_of_birth"],
+                        "blood_group": serializer.data["blood_group"],
+                        "join_date": serializer.data["join_date"],
+                        "avatar": serializer.data["avatar"],
+                        "department": serializer.data["department"],
+                        "designation": serializer.data["designation"],
+                        "employee_status": serializer.data["employee_status"]
+                    }
+            except Exception as e:
+                return Response({"success": False, "message": "UserProfile is not created"}, status=status.HTTP_404_NOT_FOUND)
 
         if response_data=={}:
             return Response({"success":False, "message": "UserRole not found"}, status=status.HTTP_404_NOT_FOUND)

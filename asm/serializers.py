@@ -7,6 +7,12 @@ from django.utils.translation import gettext_lazy as _
 
 from django.contrib.auth import authenticate
 
+from rest_framework import serializers
+from .models import ASM
+from django.contrib.auth.models import User, Group
+from zonemanager.models import ZoneManager
+from master.models import State, District, Office
+
 
 class GroupSerializer(serializers.ModelSerializer):
     class Meta:
@@ -189,4 +195,29 @@ class UserSerializer(serializers.ModelSerializer):
         fields = ["id", "username", "email", "first_name", "last_name"]
 
 
+
+
+
+  # adjust import paths
+
+
+class ASMSerializer(serializers.ModelSerializer):
+    user = serializers.PrimaryKeyRelatedField(read_only=True)
+    zone_manager = serializers.PrimaryKeyRelatedField(queryset=ZoneManager.objects.all(), required=False, allow_null=True)
+    group = serializers.PrimaryKeyRelatedField(queryset=Group.objects.all(), required=False, allow_null=True)
+    states = serializers.PrimaryKeyRelatedField(queryset=State.objects.all(), many=True, required=False)
+    districts = serializers.PrimaryKeyRelatedField(queryset=District.objects.all(), many=True, required=False)
+    offices = serializers.PrimaryKeyRelatedField(queryset=Office.objects.all(), many=True, required=False)
+
+    class Meta:
+        model = ASM
+        fields = [
+            "id",
+            "user",
+            "zone_manager",
+            "group",
+            "states",
+            "districts",
+            "offices",
+        ]
 
