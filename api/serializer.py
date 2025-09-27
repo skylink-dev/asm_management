@@ -1,5 +1,5 @@
 from django.contrib.auth import authenticate
-from rest_framework import serializers
+
 
 from asm.models import ASM
 from django.contrib.auth.models import User, Group
@@ -7,15 +7,18 @@ from django.contrib.auth.models import User, Group
 
 from rest_framework import serializers
 from django.contrib.auth.models import User
+
+from zonemanager.serializer import ZoneManagerSerializer
 from .models import UserProfile
 
 class UserSerializer(serializers.ModelSerializer):
     """Nested serializer for basic User info"""
     full_name = serializers.SerializerMethodField()
+    groups = serializers.StringRelatedField(many=True)
 
     class Meta:
         model = User
-        fields = ['id', 'username', 'email', 'first_name', 'last_name', 'full_name']
+        fields = ['id', 'username', 'email', 'first_name', 'last_name', 'full_name','groups']
 
     def get_full_name(self, obj):
         return obj.get_full_name()
@@ -23,11 +26,12 @@ class UserSerializer(serializers.ModelSerializer):
 
 class UserProfileSerializer(serializers.ModelSerializer):
     user = UserSerializer(read_only=True)  # Nested user info
-
+    zone = ZoneManagerSerializer(source="user.zone_manager", read_only=True)
     class Meta:
         model = UserProfile
         fields = [
             'user',
+            'zone',
             'employee_id',
             'phone',
             'address',
@@ -39,6 +43,8 @@ class UserProfileSerializer(serializers.ModelSerializer):
             'designation',
             'employee_status'
         ]
+
+
 
 
 

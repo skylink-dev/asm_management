@@ -10,16 +10,16 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from api.serializer import UploadFileSerializer, ASMRegisterSerializer, LoginSerializer
 from asm.permissions import IsAdminAPI
 from master.models import State, District, Office, PincodeData
-from rest_framework.views import APIView
-from rest_framework.response import Response
-from rest_framework import status
-from rest_framework.authtoken.models import Token
+
 
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status, permissions
+
+from zonemanager.serializer import ZoneManagerSerializer
 from .models import UserProfile
 from .serializer import UserProfileSerializer
+from zonemanager.models import ZoneManager
 
 class UploadAndProcessFileAPI(APIView):
     def post(self, request, *args, **kwargs):
@@ -223,9 +223,8 @@ class RefreshTokenView(APIView):
 
 class LogoutView(APIView):
     permission_classes = [IsAuthenticated]
-    #
     def post(self, request):
-        response = Response({"message": "Logout successful"}, status=status.HTTP_200_OK)
+        response = Response({"success":True, "message": "Logout successful"}, status=status.HTTP_200_OK)
         response.delete_cookie("refresh_token")
         return response
 
@@ -246,5 +245,42 @@ class UserProfileAPI(APIView):
             return Response({"detail": "UserProfile not found"}, status=status.HTTP_404_NOT_FOUND)
 
         serializer = UserProfileSerializer(profile)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        response_data = {}
+        if request.user.groups.filter(name__iexact='Zonal Manager').exists():
+            zone_manager = ZoneManager.objects.get(user=request.user)
+            if zone_manager:
+                zone_serializer = ZoneManagerSerializer(zone_manager)
+                response_data = {
+                    "role_id": zone_serializer.data["id"],
+                    "states": zone_serializer.data["states"],
+                    "offices": zone_serializer.data["offices"],
+                    "districts": zone_serializer.data["districts"],
+                    "user_id": serializer.data["user"]["id"],
+                    "username": serializer.data["user"]["username"],
+                    "name": serializer.data["user"]["full_name"],
+                    "email": serializer.data["user"]["email"],
+                    "role": serializer.data["user"]["groups"][0],
+                    "employee_id": serializer.data["employee_id"],
+                    "phone": serializer.data["phone"],
+                    "address": serializer.data["address"],
+                    "date_of_birth": serializer.data["date_of_birth"],
+                    "blood_group": serializer.data["blood_group"],
+                    "join_date": serializer.data["join_date"],
+                    "avatar": serializer.data["avatar"],
+                    "department": serializer.data["department"],
+                    "designation": serializer.data["designation"],
+                    "employee_status": serializer.data["employee_status"]
+                }
+
+
+        if response_data=={}:
+            return Response({"success":False, "message": "UserRole not found"}, status=status.HTTP_404_NOT_FOUND)
+
+        return Response(
+            {
+                "success":True,
+                "message": "User profile fetched successfully",
+                "data":response_data
+            }
+            , status=status.HTTP_200_OK)
 
