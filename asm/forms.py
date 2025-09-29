@@ -1,5 +1,5 @@
 from django import forms
-from dal import autocomplete
+#from dal import autocomplete
 from .models import ASM
 from master.models import State, District, Office
 
@@ -8,14 +8,14 @@ class ASMForm(forms.ModelForm):
         model = ASM
         fields = ['user', 'zone_manager', 'group', 'states', 'districts', 'offices']
 
-        widgets = {
-            'zone_manager': autocomplete.ModelSelect2(url='zonemanager-autocomplete'),
-            'districts': autocomplete.ModelSelect2Multiple(
-                url='district-autocomplete',
-                forward=['states']
-            ),
-            'offices': autocomplete.ModelSelect2Multiple(
-                url='office-autocomplete',
-                forward=['districts']
-            ),
-        }
+        # widgets = {
+        #     #'zone_manager': autocomplete.ModelSelect2(url='zonemanager-autocomplete'),
+        #     'districts': autocomplete.ModelSelect2Multiple(
+        #         url='district-autocomplete',
+        #         forward=['states']
+        #     ),
+        #     'offices': autocomplete.ModelSelect2Multiple(
+        #         url='office-autocomplete',
+        #         forward=['districts']
+        #     ),
+        # }

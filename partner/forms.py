@@ -9,15 +9,15 @@ class PartnerForm(forms.ModelForm):
         model = Partner
         fields = ["name", "email", "zone_manager", "asm", "states", "districts", "offices"]
 
-        widgets = {
-            "zone_manager": autocomplete.ModelSelect2(url="zone-manager-autocomplete"),
-            "asm": autocomplete.ModelSelect2(url="asm-autocomplete", forward=["zone_manager"]),
-            "districts": autocomplete.ModelSelect2Multiple(
-                url="district-autocomplete",
-                forward=["states"]
-            ),
-            "offices": autocomplete.ModelSelect2Multiple(
-                url="office-autocomplete",
-                forward=["districts"]
-            ),
-        }
+        # widgets = {
+        #     #"zone_manager": autocomplete.ModelSelect2(url="zone-manager-autocomplete"),
+        #     "asm": autocomplete.ModelSelect2(url="asm-autocomplete", forward=["zone_manager"]),
+        #     "districts": autocomplete.ModelSelect2Multiple(
+        #         url="district-autocomplete",
+        #         forward=["states"]
+        #     ),
+        #     "offices": autocomplete.ModelSelect2Multiple(
+        #         url="office-autocomplete",
+        #         forward=["districts"]
+        #     ),
+        # }
