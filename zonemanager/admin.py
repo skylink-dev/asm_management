@@ -7,15 +7,16 @@ from dal import autocomplete
 @admin.register(ZoneManager)
 class ZoneManagerAdmin(admin.ModelAdmin):
     form = ZoneManagerForm
+
     list_display = (
         "full_name",
         "group",
         "get_states",
         "get_districts",
         "get_offices",
-        "action_links",  # Include the custom edit/delete column here
+        "action_links",
     )
-    search_fields = ["user__first_name", "user__last_name"]
+
     search_fields = (
         "user__first_name",
         "user__last_name",
@@ -23,16 +24,19 @@ class ZoneManagerAdmin(admin.ModelAdmin):
         "districts__name",
         "offices__name",
     )
+
     list_filter = (
         "states",
         "districts",
         "offices",
     )
-    filter_horizontal = ( "districts", "offices")  # optional
 
-    # Display full name of Zone Manager
+    # Remove filter_horizontal for chained fields
+    # filter_horizontal = ("districts", "offices")
+
+    # Display full name
     def full_name(self, obj):
-        return f"{obj.user.first_name} {obj.user.last_name}"
+        return f"{obj.user.first_name} {obj.user.last_name}" if obj.user else "-"
     full_name.short_description = "Zone Manager Name"
     full_name.admin_order_field = "user__first_name"
 
@@ -51,7 +55,7 @@ class ZoneManagerAdmin(admin.ModelAdmin):
         return ", ".join([o.name for o in obj.offices.all()])
     get_offices.short_description = "Offices"
 
-    # 🔹 Custom edit/delete icons
+    # Custom edit/delete icons
     def action_links(self, obj):
         return format_html(
             '<a href="{}" style="margin-right:5px;"><img src="/static/admin/img/icon-changelink.svg" alt="Edit" /></a>'
@@ -60,6 +64,13 @@ class ZoneManagerAdmin(admin.ModelAdmin):
             f"/admin/zonemanager/zonemanager/{obj.pk}/delete/"
         )
     action_links.short_description = "Actions"
+
+    # Include JS for chained fields
+    class Media:
+        js = [
+            "admin/js/jquery.init.js",       # Required by Django admin
+            "js/admin/chained_fields.js",    # Your custom JS
+        ]
 
 @admin.register(ZMDailyTarget)
 class ZMDailyTargetAdmin(admin.ModelAdmin):

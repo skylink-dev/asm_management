@@ -16,10 +16,11 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-
+from asm.api_views import get_chained_options
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path("chaining/", include("smart_selects.urls")),
+    path("chaining/", include("smart_selects.urls")),  # Required for smart selects
+    path("api/chained-options/", get_chained_options, name="chained-options"),  # Generic API
       path('zonemanager/', include('zonemanager.urls')),
       # path('asm/', include('asm.urls')),
       path('partner/', include('partner.urls')),

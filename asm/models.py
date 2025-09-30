@@ -13,44 +13,14 @@ class Role(models.Model):
 
     def __str__(self):
         return self.name
-
-
 class ASM(models.Model):
-    user = models.OneToOneField(
-        User, on_delete=models.SET_NULL, related_name="asm", null=True, blank=True, default=None
-    )
-    zone_manager = models.ForeignKey(
-        ZoneManager,
-        on_delete=models.SET_NULL,
-        related_name="asms",
-        null=True,
-        blank=True,
-        default=None
-    )
-    group = models.ForeignKey(
-        Group, on_delete=models.SET_NULL, related_name="asms", null=True, blank=True, default=None
-    )
+    user = models.OneToOneField(User, on_delete=models.SET_NULL, null=True, blank=True)
+    zone_manager = models.ForeignKey(ZoneManager, on_delete=models.SET_NULL, null=True, blank=True)
+    group = models.ForeignKey(Group, on_delete=models.SET_NULL, null=True, blank=True)
 
-    # States
     states = models.ManyToManyField(State, blank=True, related_name="asms")
-    
-    # Districts chained to selected States
-    districts = ChainedManyToManyField(
-        District,
-        chained_field="states",
-        chained_model_field="state",
-        blank=True,
-        related_name="asms"
-    )
-    
-    # Offices chained to selected Districts
-    offices = ChainedManyToManyField(
-        Office,
-        chained_field="districts",
-        chained_model_field="district",
-        blank=True,
-        related_name="asms"
-    )
+    districts = ChainedManyToManyField(District, chained_field="states", chained_model_field="state", blank=True)
+    offices = ChainedManyToManyField(Office, chained_field="districts", chained_model_field="district", blank=True)
 
     def __str__(self):
         if self.user:

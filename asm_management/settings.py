@@ -29,29 +29,34 @@ ALLOWED_HOSTS = ["*"]
 
 
 # Application definition
-
 INSTALLED_APPS = [
-    "jazzmin", # unable t o find the package error
-    'corsheaders',
-    'django.contrib.admin',
-    'django.contrib.auth',
-    'django.contrib.contenttypes',
-    'django.contrib.sessions',
-    'django.contrib.messages',
-    'django.contrib.staticfiles',
+    "jazzmin",  # Admin UI
+    "corsheaders",
+
+    # Django built-in apps
+    "django.contrib.admin",
+    "django.contrib.auth",
+    "django.contrib.contenttypes",
+    "django.contrib.sessions",
+    "django.contrib.messages",
+    "django.contrib.staticfiles",
+
+    # Third-party apps
     "rest_framework",
     "rest_framework.authtoken",
-     "master",
-    'import_export',
-    'zonemanager',
-    'smart_selects',
-    'dal',
-    'dal_select2',
-    'asm',
-    'partner',
-    'api',
-     
+    "import_export",
+    "smart_selects",
+    "dal",
+    "dal_select2",
+
+    # Your apps (dependencies first)
+    "master",        # Group model is here
+    "zonemanager",   # State, District models
+    "asm",           # ASM model depends on master & zonemanager
+    "partner",
+    "api",
 ]
+
 USE_DJANGO_JQUERY = True
 
 MIDDLEWARE = [
@@ -172,8 +177,18 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
-STATIC_URL = 'static/'
+import os
+BASE_DIR = Path(__file__).resolve().parent.parent  # if not already defined
 
+STATIC_URL = "/static/"
+
+# Directory where collectstatic will copy all static files
+STATIC_ROOT = BASE_DIR / "staticfiles"
+
+# Optional: additional static files directories
+STATICFILES_DIRS = [
+    BASE_DIR / "static",
+]
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
@@ -182,25 +197,37 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
 JAZZMIN_SETTINGS = {
+    # 🔹 Site info
     "site_title": "Skylink Admin",
     "site_header": "Skylink Admin Panel",
     "site_brand": "Skylink",
     "welcome_sign": "Welcome to Skylink Admin",
     "search_model": "auth.User",
 
-    # 🔹 App order
+    # 🔹 App order in navigation
     "order_with_respect_to": ["zonemanager", "asm", "partner", "master", "auth"],
 
-    # 🔹 Custom icons (optional)
+    # 🔹 Custom icons for apps
     "icons": {
         "auth": "fas fa-users-cog",
         "asm": "fas fa-user-tie",
         "zonemanager": "fas fa-user-shield",
         "master": "fas fa-cogs",
+        "partner": "fas fa-handshake",  # optional example
     },
 
-    # 🔹 Navigation tweaks (optional)
+    # 🔹 Custom icons for specific models
+    "model_icons": {
+        "asm.ASM": "fas fa-user-tie",
+        "zonemanager.ZoneManager": "fas fa-user-shield",
+    },
+
+    # 🔹 Navigation tweaks
+    "navigation_expanded": False,
+    "hide_apps": [],
+    "hide_models": [],
     "show_ui_builder": True,
+      
 }
 
 
@@ -209,6 +236,7 @@ JAZZMIN_SETTINGS.update({
         "asm.ASM": "fas fa-user-tie",
         "zonemanager.ZoneManager": "fas fa-user-shield",
     },
+    "navigation_expanded": False, 
     "hide_apps": [],
     "hide_models": [],
 })

@@ -3,77 +3,88 @@ from django.utils.html import format_html
 from .models import ASM
 from .forms import ASMForm
 from .models import ASMDailyTarget
-
-
+from django.contrib import admin
+from django.utils.html import format_html
+from .models import ASM
+from .forms import ASMForm
 @admin.register(ASM)
+# class ASMAdmin(admin.ModelAdmin):
+#     form = ASMForm
+#     autocomplete_fields = ["zone_manager"]
+#     list_display = (
+#         "full_name",
+#         "zone_manager_name",
+#         "group",
+#         "get_states",
+#         "get_districts",
+#         "get_offices",
+#         "action_links",
+#     )
+#     filter_horizontal = ("states", "districts", "offices") 
+
+#     # -------------------------
+#     def full_name(self, obj):
+#         return f"{obj.user.first_name} {obj.user.last_name}" if obj.user else "-"
+#     full_name.short_description = "ASM Name"
+#     full_name.admin_order_field = "user__first_name"
+
+#     def zone_manager_name(self, obj):
+#         if obj.zone_manager and obj.zone_manager.user:
+#             return f"{obj.zone_manager.user.first_name} {obj.zone_manager.user.last_name}"
+#         return "-"
+#     zone_manager_name.short_description = "Zone Manager"
+#     zone_manager_name.admin_order_field = "zone_manager__user__first_name"
+
+#     def get_states(self, obj):
+#         return ", ".join([s.name for s in obj.states.all()])
+#     get_states.short_description = "States"
+
+#     def get_districts(self, obj):
+#         return ", ".join([d.name for d in obj.districts.all()])
+#     get_districts.short_description = "Districts"
+
+#     def get_offices(self, obj):
+#         return ", ".join([o.name for o in obj.offices.all()])
+#     get_offices.short_description = "Offices"
+
+#     def action_links(self, obj):
+#         return format_html(
+#             '<a href="{}" style="margin-right:5px;"><img src="/static/admin/img/icon-changelink.svg" alt="Edit" /></a>'
+#             '<a href="{}"><img src="/static/admin/img/icon-deletelink.svg" alt="Delete" /></a>',
+#             f"/admin/asm/asm/{obj.pk}/change/",
+#             f"/admin/asm/asm/{obj.pk}/delete/"
+#         )
+#     action_links.short_description = "Actions"
+
 class ASMAdmin(admin.ModelAdmin):
-    form = ASMForm
-    autocomplete_fields = ["zone_manager"]
-    list_display = (
-        "full_name",
-        "zone_manager_name",
-        "group",
-        "get_states",
-        "get_districts",
-        "get_offices",
-        "action_links",  # Edit/Delete icons
-    )
-    search_fields = (
-        "user__first_name",
-        "user__last_name",
-        "zone_manager__user__first_name",
-        "zone_manager__user__last_name",
-        "states__name",
-        "districts__name",
-        "offices__name",
-    )
-    list_filter = (
-        "zone_manager",
-      
-        "states",
-        "districts",
-        "offices",
-    )
-    filter_horizontal = ( "districts", "offices")  # optional for easy selection
+    list_display = ("full_name", "zone_manager_name", "group", "get_states", "get_districts", "get_offices")
+    # remove filter_horizontal for chained fields
+    # filter_horizontal = ("states", "districts", "offices")
 
-    # Display ASM full name
+
     def full_name(self, obj):
-        return f"{obj.user.first_name} {obj.user.last_name}"
+        return f"{obj.user.first_name} {obj.user.last_name}" if obj.user else "-"
     full_name.short_description = "ASM Name"
-    full_name.admin_order_field = "user__first_name"
 
-    # Display Zone Manager full name
     def zone_manager_name(self, obj):
-        if obj.zone_manager and obj.zone_manager.user:
-            return f"{obj.zone_manager.user.first_name} {obj.zone_manager.user.last_name}"
-        return "-"
+        return f"{obj.zone_manager.user.first_name} {obj.zone_manager.user.last_name}" if obj.zone_manager else "-"
     zone_manager_name.short_description = "Zone Manager"
-    zone_manager_name.admin_order_field = "zone_manager__user__first_name"
 
-    # Display States
     def get_states(self, obj):
         return ", ".join([s.name for s in obj.states.all()])
     get_states.short_description = "States"
 
-    # Display Districts
     def get_districts(self, obj):
         return ", ".join([d.name for d in obj.districts.all()])
     get_districts.short_description = "Districts"
 
-    # Display Offices
     def get_offices(self, obj):
         return ", ".join([o.name for o in obj.offices.all()])
     get_offices.short_description = "Offices"
 
-    # 🔹 Custom edit/delete icons
-    def action_links(self, obj):
-        return format_html(
-            '<a href="{}" style="margin-right:5px;"><img src="/static/admin/img/icon-changelink.svg" alt="Edit" /></a>'
-            '<a href="{}"><img src="/static/admin/img/icon-deletelink.svg" alt="Delete" /></a>',
-            f"/admin/asm/asm/{obj.pk}/change/",
-            f"/admin/asm/asm/{obj.pk}/delete/"
-        )
-    action_links.short_description = "Actions"
+    class Media:
+        
+        js = [   "admin/js/jquery.init.js",  "js/admin/chained_fields.js"] # Include your custom JS
 
 
 @admin.register(ASMDailyTarget)
