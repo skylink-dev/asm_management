@@ -85,17 +85,32 @@ class ASMSerializer(serializers.ModelSerializer):
         model = ASM
         fields = ['id', 'user']
 
+from rest_framework import serializers
+from .models import ZMDailyTarget,  ZoneManager
 
+from zonemanager.models import ZoneManager, ZMDailyTarget  # Only models in this app
+from asm.models import ASM  # Import ASM from its app
+
+# Nested serializers (if in a separate file)
+# from .nested_serializers import ASMSerializer, ZoneManagerSerializerOnlyName
 class ZMDailyTargetSerializer(serializers.ModelSerializer):
+    # Input fields (write-only)
     zone_manager_id = serializers.PrimaryKeyRelatedField(
-        queryset=ZoneManager.objects.all(), source='zone_manager', write_only=True
+        queryset=ZoneManager.objects.all(),
+        source='zone_manager',
+        write_only=True
     )
     asm_id = serializers.PrimaryKeyRelatedField(
-        queryset=ASM.objects.all(), source='asm', write_only=True
+        queryset=ASM.objects.all(),
+        source='asm',
+        write_only=True
     )
+
+    # Output fields (read-only)
     zone_manager = ZoneManagerSerializerOnlyName(read_only=True)
     asm = ASMSerializer(read_only=True)
 
+    # Target fields (required)
     application_target = serializers.FloatField(required=True)
     pop_target = serializers.FloatField(required=True)
     esign_target = serializers.FloatField(required=True)
@@ -105,7 +120,7 @@ class ZMDailyTargetSerializer(serializers.ModelSerializer):
     calls_target = serializers.FloatField(required=True)
     sd_collection_target = serializers.FloatField(required=True)
 
-    # Achieve fields (default 0)
+    # Achieved fields (default 0)
     application_achieve = serializers.FloatField(default=0.0)
     pop_achieve = serializers.FloatField(default=0.0)
     esign_achieve = serializers.FloatField(default=0.0)
@@ -118,4 +133,37 @@ class ZMDailyTargetSerializer(serializers.ModelSerializer):
     class Meta:
         model = ZMDailyTarget
         fields = "__all__"
+    def validate(self, attrs):
+            """
+            Custom validation:
+            1. Ensure ASM belongs to the selected ZoneManager
+            2. Ensure ZoneManager belongs to the logged-in user (optional)
+            3. Prevent duplicate target for the same date
+            """
+            request = self.context.get('request')
+            user = getattr(request, 'user', None)
+
+            zone_manager = attrs.get('zone_manager')
+            asm = attrs.get('asm')
+            date = attrs.get('date')
+
+            # Optional: Restrict ZoneManager to logged-in user
+            # if user and zone_manager.user != user:
+            #     raise serializers.ValidationError({
+            #         "detail": "You can only create targets for your own ZoneManager."
+            #     })
+
+            # Ensure ASM belongs to ZoneManager
+            if asm.zone_manager != zone_manager:
+                raise serializers.ValidationError({
+                    "detail": "ASM not found under your ZoneManager."
+                })
+
+            # Check for unique-together constraint: zone_manager + asm + date
+            if ZMDailyTarget.objects.filter(zone_manager=zone_manager, asm=asm, date=date).exists():
+                raise serializers.ValidationError({
+                    "detail": "A target for this ZoneManager, ASM, and date already exists."
+                })
+
+            return attrs
 

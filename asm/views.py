@@ -249,9 +249,6 @@ class ASMByZoneManagerAPIView(APIView):
                 "offices":asmdata["offices"],
             })
 
-
-
-
         response = Response({
             "success": True,
             "data": data

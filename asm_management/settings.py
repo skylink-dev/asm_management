@@ -106,7 +106,7 @@ JWT_ALGORITHM = "HS256"
 SIMPLE_JWT = {
     "ALGORITHM": JWT_ALGORITHM,
     "SIGNING_KEY": JWT_SECRET_KEY,
-    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=30),
+    "ACCESS_TOKEN_LIFETIME": timedelta(days=30),
     "REFRESH_TOKEN_LIFETIME": timedelta(days=7),
 }
 
@@ -115,27 +115,27 @@ SIMPLE_JWT = {
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.postgresql',
-#         'NAME': 'asm_management',     # Database name (same as you created in pgAdmin)
-#         'USER': 'postgres',           # Default PostgreSQL user
-#         'PASSWORD': 'postgres',  # Password you set during installation
-#         'HOST': 'localhost',          # Database host
-#         'PORT': '5433',               # Default PostgreSQL port
-#     }
-# }
-
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'asm_management_arul',     # Database name (same as you created in pgAdmin)
+        'NAME': 'asm_management',     # Database name (same as you created in pgAdmin)
         'USER': 'postgres',           # Default PostgreSQL user
-        'PASSWORD': 'postgres',  # Password you set during installation
+        'PASSWORD': 'Admin@123',  # Password you set during installation
         'HOST': 'localhost',          # Database host
-        'PORT': '5432',               # Default PostgreSQL port
+        'PORT': '5433',               # Default PostgreSQL port
     }
 }
+
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'NAME': 'asm_management_arul',     # Database name (same as you created in pgAdmin)
+#         'USER': 'postgres',           # Default PostgreSQL user
+#         'PASSWORD': 'postgres',  # Password you set during installation
+#         'HOST': 'localhost',          # Database host
+#         'PORT': '5432',               # Default PostgreSQL port
+#     }
+# }
 
 
 # Password validation
