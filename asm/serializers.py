@@ -1,13 +1,13 @@
 # serializers.py
 from rest_framework import serializers
-from django.contrib.auth.models import User, Group
+
 from django.contrib.auth.password_validation import validate_password
+
 from .models import ASM
 from django.utils.translation import gettext_lazy as _
 
 from django.contrib.auth import authenticate
 
-from rest_framework import serializers
 from .models import ASM
 from django.contrib.auth.models import User, Group
 from zonemanager.models import ZoneManager
@@ -17,8 +17,33 @@ from master.models import State, District, Office
 class GroupSerializer(serializers.ModelSerializer):
     class Meta:
         model = Group
-        fields = ['id', 'name']
+        fields = ["id", "name"]
 
+
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ["id", "username", "first_name", "last_name", "email"]
+
+
+class OfficeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Office
+        fields = ["id", "name"]
+
+# District serializer with nested offices (id and name only)
+class DistrictSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = District
+        fields = ["id", "name"]
+
+# State serializer with nested districts (id and name only)
+class StateSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = State
+        fields = ["id", "name"]
 
 class UserRegistrationSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True, required=True, validators=[validate_password])
@@ -195,21 +220,29 @@ class UserSerializer(serializers.ModelSerializer):
         fields = ["id", "username", "email", "first_name", "last_name"]
 
 
-
-
-
-  # adjust import paths
-
-
-class ASMSerializer(serializers.ModelSerializer):
-    user = serializers.PrimaryKeyRelatedField(read_only=True)
-    zone_manager = serializers.PrimaryKeyRelatedField(queryset=ZoneManager.objects.all(), required=False, allow_null=True)
-    group = serializers.PrimaryKeyRelatedField(queryset=Group.objects.all(), required=False, allow_null=True)
-    states = serializers.PrimaryKeyRelatedField(queryset=State.objects.all(), many=True, required=False)
-    districts = serializers.PrimaryKeyRelatedField(queryset=District.objects.all(), many=True, required=False)
-    offices = serializers.PrimaryKeyRelatedField(queryset=Office.objects.all(), many=True, required=False)
+class ZoneManagerSerializer(serializers.ModelSerializer):
+    user = UserSerializer(read_only=True)
 
     class Meta:
+        model = ZoneManager
+        fields = ["id", "user"]
+
+  # adjust import paths
+class GroupForRoleSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Group
+        fields = ["id", "name"]
+
+class ASMSerializer(serializers.ModelSerializer):
+    user = UserSerializer(read_only=True)
+    zone_manager = ZoneManagerSerializer(read_only=True)
+    group = GroupSerializer(read_only=True)
+    states = StateSerializer(many=True, read_only=True)
+    districts = DistrictSerializer(many=True, read_only=True)
+    offices = OfficeSerializer(many=True, read_only=True)
+
+
+class Meta:
         model = ASM
         fields = [
             "id",
@@ -221,3 +254,23 @@ class ASMSerializer(serializers.ModelSerializer):
             "offices",
         ]
 
+
+
+
+class ASMSerializerByZonalManager(serializers.ModelSerializer):
+    user = UserSerializer(read_only=True)
+    group = GroupSerializer(read_only=True)
+    states = StateSerializer(many=True, read_only=True)
+    districts = DistrictSerializer(many=True, read_only=True)
+    offices = OfficeSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = ASM
+        fields = [
+            "id",
+            "user",
+            "group",
+            "states",
+            "districts",
+            "offices",
+        ]

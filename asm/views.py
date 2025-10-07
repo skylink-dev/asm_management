@@ -8,7 +8,7 @@ from rest_framework import status, permissions
 from rest_framework.decorators import action
 from rest_framework.viewsets import ModelViewSet
 from .models import ASM
-from .serializers import ASMUserSerializer, UserSerializer
+from .serializers import ASMUserSerializer, UserSerializer,ASMSerializer,ASMSerializerByZonalManager
 from .permissions import IsAdminUser, IsASMUser, IsOwnerOrAdmin, IsAdminAPI
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -207,3 +207,77 @@ class UserListView(APIView):
         return response
 
 
+
+class GetASMBasedOnZonalManager(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+    def get(self, request):
+        users = User.objects.all()
+        serializer = UserSerializer(users, many=True)
+        response = Response({
+            "success": True,
+            "data": serializer.data
+        }, status=status.HTTP_200_OK)
+        return response
+
+
+class ASMByZoneManagerAPIView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+    def get(self, request):
+        user = request.user  # Logged-in user
+        try:
+            # Get the ZoneManager associated with this user
+            zonemanager = ZoneManager.objects.get(user=user)
+        except ZoneManager.DoesNotExist:
+            return Response({
+                "success":False,
+                "detail": "ZoneManager not found for this user."}, status=status.HTTP_404_NOT_FOUND)
+        # Get all ASMs linked to this ZoneManager
+        asms = ASM.objects.filter(zone_manager=zonemanager)
+        serializer = ASMSerializerByZonalManager(asms, many=True)
+        data = []
+        for asmdata in serializer.data:
+
+            data.append({
+                "id": asmdata["id"],
+                "user_id": asmdata["user"]["id"],
+                "user_name": asmdata["user"]["username"],
+                "email":asmdata["user"]["email"],
+                "full_name":asmdata["user"]["first_name"]+" "+asmdata["user"]["last_name"],
+                "role":asmdata["group"]["name"],
+                "state":asmdata["states"],
+                "districts":asmdata["districts"],
+                "offices":asmdata["offices"],
+            })
+
+
+
+
+        response = Response({
+            "success": True,
+            "data": data
+        }, status=status.HTTP_200_OK)
+        return response
+        return Response(serializer.data)
+
+
+
+# from rest_framework import generics, status
+# from rest_framework.response import Response
+# from .models import ASMDailyTarget
+# from .serializers import ASMDailyTargetSerializer
+#
+#
+# class ASMDailyTargetCreateAPIView(generics.CreateAPIView):
+#     queryset = ASMDailyTarget.objects.all()
+#     serializer_class = ASMDailyTargetSerializer
+#
+#     def create(self, request, *args, **kwargs):
+#         serializer = self.get_serializer(data=request.data)
+#         serializer.is_valid(raise_exception=True)
+#         self.perform_create(serializer)
+#
+#         return Response({
+#             "status": "success",
+#             "message": "ASM Daily Target created successfully",
+#             "data": serializer.data
+#         }, status=status.HTTP_201_CREATED)

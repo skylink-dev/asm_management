@@ -81,3 +81,5 @@ class ZMDailyTarget(models.Model):
         zm_name = f"{self.zone_manager.user.first_name} {self.zone_manager.user.last_name}" if self.zone_manager else "No ZM"
         asm_name = f"{self.asm.user.first_name} {self.asm.user.last_name}" if self.asm else "No ASM"
         return f"{zm_name} → {asm_name} ({self.date})"
+
+

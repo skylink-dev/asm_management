@@ -30,7 +30,7 @@ django-celery-beat>=2.4       # Schedule periodic tasks
 django-celery-results>=2.5    # Store Celery task results
 
 # JWT authentication support for Django REST framework
-djangorestframework-simplejwt>=6.1
+djangorestframework-simplejwt>=5.5.1
 
 # Image handling library
 Pillow>=10.0
@@ -43,7 +43,18 @@ pytest>=8.0
 pytest-django>=4.5
 
 # Redis caching backend for Django
-django-redis>=6.2
+django-redis>=6.0.0
 
 # Email integration (e.g., Mailgun)
 django-anymail[mailgun]>=9.4
+
+django-jazzmin
+
+django-import-export
+
+
+django-smart-selects
+
+django-autocomplete-light
+
+openpyxl

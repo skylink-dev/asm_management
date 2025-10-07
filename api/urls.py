@@ -2,7 +2,8 @@ from django.urls import path
 
 from api.serializer import LoginSerializer
 from api.views import UploadAndProcessFileAPI, ASMRegisterAPI, LoginView, LogoutView, UserProfileAPI
-from asm.views import ASMLoginAPIView, RefreshTokenView, UserListView
+from asm.views import ASMLoginAPIView, RefreshTokenView, UserListView, ASMByZoneManagerAPIView
+from zonemanager.api_views import ZMDailyTargetCreateAPIView, ZMDailyTargetListAPIView
 
 urlpatterns = [
     path('login', LoginView.as_view()),
@@ -17,4 +18,10 @@ urlpatterns = [
     path('register', ASMRegisterAPI.as_view()),
 
     path('profile', UserProfileAPI.as_view()),
+
+    path('asms',ASMByZoneManagerAPIView.as_view() ),
+
+    path('zm-daily-target/',ZMDailyTargetCreateAPIView.as_view()),
+
+    path('zm-daily-target-list',ZMDailyTargetListAPIView.as_view()),
 ]

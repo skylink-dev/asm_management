@@ -8,7 +8,7 @@ from django.contrib.auth.models import User, Group
 from rest_framework import serializers
 from django.contrib.auth.models import User
 
-from zonemanager.serializer import ZoneManagerSerializer
+from zonemanager.serializers import ZoneManagerSerializer
 from .models import UserProfile
 
 class UserSerializer(serializers.ModelSerializer):
