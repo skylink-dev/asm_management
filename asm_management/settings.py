@@ -50,6 +50,7 @@ INSTALLED_APPS = [
     'asm',
     'partner',
     'api',
+      'tasks',
      
 ]
 USE_DJANGO_JQUERY = True
@@ -201,6 +202,16 @@ JAZZMIN_SETTINGS = {
 
     # 🔹 Navigation tweaks (optional)
     "show_ui_builder": True,
+
+
+      # 🔹 Toggle sidebar options
+    "show_sidebar": True,
+    "show_ui_builder": True,
+    "navigation_expanded": False,  # start collapsed
+    "show_sidebar_icons": True,    # show icons for apps
+     "topmenu_links": [
+        {"name": "Task Dashboard", "url": "/admin/tasks/asmtask/dashboard/", "permissions": ["tasks.view_asmtask"]},
+    ],
 }
 
 

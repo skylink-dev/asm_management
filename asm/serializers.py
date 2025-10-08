@@ -241,8 +241,7 @@ class ASMSerializer(serializers.ModelSerializer):
     districts = DistrictSerializer(many=True, read_only=True)
     offices = OfficeSerializer(many=True, read_only=True)
 
-
-class Meta:
+    class Meta:
         model = ASM
         fields = [
             "id",
@@ -253,7 +252,6 @@ class Meta:
             "districts",
             "offices",
         ]
-
 
 
 
@@ -274,3 +272,150 @@ class ASMSerializerByZonalManager(serializers.ModelSerializer):
             "districts",
             "offices",
         ]
+
+
+
+
+#Arul update
+from zonemanager.serializers import ZoneManagerSerializerOnlyName
+from .models import ZMDailyTarget
+from asm.serializers import ASMSerializer
+from zonemanager.serializers import ZoneManagerSerializerOnlyName
+from .models import ASMDailyTarget
+class ASMDailyTargetSerializer(serializers.ModelSerializer):
+    asm = ASMSerializer(read_only=True)
+    zm_daily_target = serializers.PrimaryKeyRelatedField(read_only=True)
+    target_flag = serializers.IntegerField(write_only=True, required=False)
+    achieve_flag = serializers.IntegerField(write_only=True, required=False)
+
+    class Meta:
+        model = ASMDailyTarget
+        fields = "__all__"
+
+    def validate(self, attrs):
+        request = self.context.get("request")
+        asm = getattr(request.user, "asm", None)
+        if not asm:
+            raise serializers.ValidationError({"message": "ASM profile not found for user."})
+
+        date = attrs.get("date")
+        if not date:
+            raise serializers.ValidationError({"message": "Date is required."})
+
+        target_flag = attrs.get("target_flag", 0)
+        achieve_flag = attrs.get("achieve_flag", 0)
+
+        # If adding target, ensure no duplicate date
+        if target_flag == 1 and ASMDailyTarget.objects.filter(asm=asm, date=date).exists():
+            raise serializers.ValidationError({"message": "Target already set for this date."})
+
+        attrs["asm"] = asm
+        return attrs
+
+    def create(self, validated_data):
+        target_flag = validated_data.pop("target_flag", 0)
+        achieve_flag = validated_data.pop("achieve_flag", 0)
+        asm = validated_data["asm"]
+        date = validated_data["date"]
+
+        # 1️⃣ If target_flag=1 → Create new or update target fields
+        if target_flag == 1:
+            instance, created = ASMDailyTarget.objects.get_or_create(asm=asm, date=date)
+            for field in [
+                "application_target", "pop_target", "esign_target", "new_taluk_target",
+                "new_live_partners_target", "activations_target", "calls_target", "sd_collection_target"
+            ]:
+                if field in validated_data:
+                    setattr(instance, field, validated_data[field])
+            instance.save()
+            return instance
+
+        # 2️⃣ If achieve_flag=1 → Update ASM achievements AND ZM target achievements
+        elif achieve_flag == 1:
+            try:
+                # Update ASM Daily Target
+                instance = ASMDailyTarget.objects.get(asm=asm, date=date)
+            except ASMDailyTarget.DoesNotExist:
+                raise serializers.ValidationError({"message": "Target not found for this date."})
+
+            # Update ASM achievement fields
+            achievement_fields = [
+                "application_achieve", "pop_achieve", "esign_achieve", "new_taluk_achieve",
+                "new_live_partners_achieve", "activations_achieve", "calls_achieve", "sd_collection_achieve"
+            ]
+            for field in achievement_fields:
+                if field in validated_data:
+                    setattr(instance, field, validated_data[field])
+            instance.save()
+
+            # Also update ZMDailyTarget achievement fields if linked
+            if instance.zm_daily_target:
+                zm_instance = instance.zm_daily_target
+                for field in achievement_fields:
+                    # Directly map ASM achievement fields to ZM achievement fields
+                    if hasattr(zm_instance, field) and field in validated_data:
+                        setattr(zm_instance, field, validated_data[field])
+                zm_instance.save()
+
+            return instance
+
+        raise serializers.ValidationError({"message": "Either target_flag or achieve_flag must be 1."})
+
+        
+
+        
+
+        
+    
+
+class ASMDailyTargetListSerializer(serializers.ModelSerializer):
+    zm_targets = serializers.SerializerMethodField()
+
+    class Meta:
+        model = ASMDailyTarget
+        fields = [
+            "id", "date",
+            "application_target", "pop_target", "esign_target",
+            "new_taluk_target", "new_live_partners_target",
+            "activations_target", "calls_target", "sd_collection_target",
+
+            "application_achieve", "pop_achieve", "esign_achieve",
+            "new_taluk_achieve", "new_live_partners_achieve",
+            "activations_achieve", "calls_achieve", "sd_collection_achieve",
+
+            "zm_targets"
+        ]
+
+    def get_zm_targets(self, obj):
+        zm_data = {}
+        if obj.zm_daily_target:
+            zm = obj.zm_daily_target
+            zm_data = {
+                "application_target": zm.application_target,
+                "pop_target": zm.pop_target,
+                "esign_target": zm.esign_target,
+                "new_taluk_target": zm.new_taluk_target,
+                "new_live_partners_target": zm.new_live_partners_target,
+                "activations_target": zm.activations_target,
+                "calls_target": zm.calls_target,
+                "sd_collection_target": zm.sd_collection_target,
+            }
+        return zm_data
+    
+
+class ASMBasicSerializer(serializers.ModelSerializer):
+    user = serializers.SerializerMethodField()
+    
+    def get_user(self, obj):
+        return {
+            "id": obj.user.id,
+            "username": obj.user.username,
+            "first_name": obj.user.first_name,
+            "last_name": obj.user.last_name,
+        }
+
+    class Meta:
+        model = ASM
+        fields = ['id', 'user']
+
+

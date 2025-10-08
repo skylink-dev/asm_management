@@ -167,3 +167,29 @@ class ZMDailyTargetSerializer(serializers.ModelSerializer):
 
             return attrs
 
+
+
+from django.contrib.auth import get_user_model
+
+User = get_user_model()
+
+class ZoneManagerUserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['id',  'first_name', 'last_name']
+
+
+class ZoneManagerBasicSerializer(serializers.ModelSerializer):
+    user = serializers.SerializerMethodField()
+
+    def get_user(self, obj):
+        return {
+            "id": obj.user.id,
+          
+            "first_name": obj.user.first_name,
+            "last_name": obj.user.last_name
+        }
+
+    class Meta:
+        model = ZoneManager
+        fields = ['id', 'user']

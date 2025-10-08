@@ -65,8 +65,10 @@ class ASM(models.Model):
     # otp = models.CharField(default="", null=True, blank=True)
 
 
-def __str__(self):
-        return f"{self.user.username} ({self.zone_manager.user.username})"
+    def __str__(self):
+        # Friendly display for admin: ASM username + Zone Manager
+        zm_username = self.zone_manager.user.username if self.zone_manager else "No ZM"
+        return f"{self.user.username} ({zm_username})"
 
 
 class ASMDailyTarget(models.Model):
@@ -100,3 +102,58 @@ class ASMDailyTarget(models.Model):
 
     def __str__(self):
         return f"{self.asm.user.get_full_name()} ({self.date})"
+    
+
+
+
+# # asm/models.py
+# from django.db import models
+# from django.utils import timezone
+# from zonemanager.models import ZoneManager
+# from asm.models import ASM
+# from master.models import TaskCategory
+# class ASMTask(models.Model):
+#     STATUS_CHOICES = (
+#         ('pending', 'Pending'),
+#         ('in_progress', 'In Progress'),
+#         ('completed', 'Completed'),
+#         ('cancelled', 'Cancelled'),
+#         ('hold', 'Hold'),
+#     )
+
+#     title = models.CharField(max_length=200, default="New Task")  # Optional task title
+#     zone_manager = models.ForeignKey(
+#         ZoneManager,
+#         on_delete=models.SET_NULL,
+#         null=True,
+#         blank=True,
+#         related_name="assigned_tasks"
+#     )
+#     asm = models.ForeignKey(
+#         ASM,
+#         on_delete=models.CASCADE,
+#         related_name="tasks"
+#     )
+#     category = models.ForeignKey(
+#         TaskCategory,
+#         on_delete=models.SET_NULL,
+#         null=True,
+#         blank=True,
+#         related_name="tasks"
+#     )
+#     details = models.TextField(default="No details provided")
+
+#     start_date = models.DateField(default=timezone.now)
+#     end_date = models.DateField(default=timezone.now)
+#     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
+
+#     created_at = models.DateTimeField(auto_now_add=True)
+#     updated_at = models.DateTimeField(auto_now=True)
+
+#     class Meta:
+#         ordering = ["-start_date", "-created_at"]
+
+#     def __str__(self):
+#         asm_name = self.asm.user.get_full_name() if self.asm else "No ASM"
+#         category_name = self.category.name if self.category else "No Category"
+#         return f"{asm_name} | {category_name} | {self.status}"

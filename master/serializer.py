@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from .models import State, District, Office
-
+from .models import TaskCategory
 
 class OfficeSerializer(serializers.ModelSerializer):
     class Meta:
@@ -22,3 +22,10 @@ class StateSerializer(serializers.ModelSerializer):
     class Meta:
         model = State
         fields = ['id', 'name', 'districts']
+
+
+
+class TaskCategorySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = TaskCategory
+        fields = ['id', 'name', 'description']

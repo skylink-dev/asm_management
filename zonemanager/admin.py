@@ -148,3 +148,5 @@ class ZMDailyTargetAdmin(admin.ModelAdmin):
             sd_a=obj.sd_collection_achieve,
         )
     targets_achievements_table.short_description = "Targets & Achievements"
+
+

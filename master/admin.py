@@ -4,7 +4,7 @@ from .models import PincodeData
 from .resources import PincodeDataResource
 
 from .models import State, District, Office
-
+from .models import TaskCategory
 @admin.register(PincodeData)
 class PincodeDataAdmin(ImportExportModelAdmin):
     resource_class = PincodeDataResource
@@ -32,3 +32,10 @@ class OfficeAdmin(admin.ModelAdmin):
     list_display = ("name", "district", "officetype", "pincode")
     search_fields = ("name", "district__name", "pincode")
     list_filter = ("district__state", "district", "officetype") 
+
+    
+
+@admin.register(TaskCategory)
+class TaskCategoryAdmin(admin.ModelAdmin):
+    list_display = ('name', 'description')
+    search_fields = ('name',)

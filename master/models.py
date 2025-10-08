@@ -69,3 +69,14 @@ class TargetCategory(models.TextChoices):
     ACTIVATIONS = "Activations", "Activations"
     CALLS = "Calls", "Calls"
     SD_COLLECTION = "SD Collection", "SD Collection (Rs)"
+
+
+
+
+#Task Manage ment 
+class TaskCategory(models.Model):
+    name = models.CharField(max_length=100, unique=True)
+    description = models.TextField(blank=True, default="No description")
+
+    def __str__(self):
+        return self.name

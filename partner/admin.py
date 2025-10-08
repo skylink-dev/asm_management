@@ -1,7 +1,10 @@
 from django.contrib import admin
 from django.utils.html import format_html
-from .models import Partner
+from .models import Partner, SDCollection
 from .forms import PartnerForm
+from asm.models import ASM
+from zonemanager.models import ZoneManager
+
 
 @admin.register(Partner)
 class PartnerAdmin(admin.ModelAdmin):
@@ -68,3 +71,48 @@ class PartnerAdmin(admin.ModelAdmin):
             f"/admin/partner/partner/{obj.pk}/delete/"
         )
     action_links.short_description = "Actions"
+
+
+
+
+
+@admin.register(SDCollection)
+class SDCollectionAdmin(admin.ModelAdmin):
+    list_display = (
+        'partner',
+        'asm',
+        'zone_manager',
+        'date',
+        'amount',
+        'status',
+        'note',
+        'action_buttons'
+    )
+    list_filter = ('status', 'asm', 'zone_manager', 'date')
+    search_fields = (
+        'partner__name',
+        'asm__user__username',
+        'zone_manager__user__username',
+        'note'
+    )
+    ordering = ('-date',)
+
+    # Add action buttons for Edit & Soft Delete
+    def action_buttons(self, obj):
+        return format_html(
+            '<a class="button" style="background-color:#28a745;color:white;padding:2px 6px;border-radius:4px;text-decoration:none;" href="{}">Edit</a>&nbsp;'
+            '<a class="button" style="background-color:#dc3545;color:white;padding:2px 6px;border-radius:4px;text-decoration:none;" href="{}" onclick="return confirm(\'Are you sure you want to delete?\')">Delete</a>',
+            f'/admin/partner/sdcollection/{obj.id}/change/',
+            f'/admin/partner/sdcollection/{obj.id}/delete/'
+        )
+    action_buttons.short_description = 'Actions'
+
+    # Override delete to soft delete
+    def delete_model(self, request, obj):
+        obj.is_deleted = True
+        obj.save()
+
+    # Filter out soft-deleted objects in admin list
+    def get_queryset(self, request):
+        qs = super().get_queryset(request)
+        return qs.filter(is_deleted=False)

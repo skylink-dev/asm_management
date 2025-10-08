@@ -1,0 +1,492 @@
+{% extends "admin/base_site.html" %}
+{% load static %}
+
+{% block content %}
+<div class="task-board-wrapper">
+    <!-- Header -->
+    <div class="board-header">
+        <h1 class="board-title">Task Board</h1>
+    </div>
+
+    <!-- Filter Panel -->
+    <form method="get" class="filter-panel">
+        <div class="filter-glass">
+            <div class="filter-group">
+                <label for="start_date" class="filter-label">Start Date</label>
+                <input type="date" id="start_date" name="start_date" value="{{ start_date }}" class="filter-input">
+            </div>
+
+            <div class="filter-group">
+                <label for="end_date" class="filter-label">End Date</label>
+                <input type="date" id="end_date" name="end_date" value="{{ end_date }}" class="filter-input">
+            </div>
+
+            <div class="filter-group">
+                <label for="asm" class="filter-label">ASM</label>
+                <select id="asm" name="asm" class="filter-select">
+                    <option value="">All</option>
+                    {% for asm in asms %}
+                        <option value="{{ asm.id }}" {% if asm.id == selected_asm %}selected{% endif %}>{{ asm.get_full_name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="filter-group">
+                <label for="zone_manager" class="filter-label">Zone Manager</label>
+                <select id="zone_manager" name="zone_manager" class="filter-select">
+                    <option value="">All</option>
+                    {% for zm in zms %}
+                        <option value="{{ zm.id }}" {% if zm.id == selected_zm %}selected{% endif %}>{{ zm.user.get_full_name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="filter-actions">
+                <button type="submit" class="btn-filter">
+                    <span>Apply</span>
+                </button>
+                <a href="{% url 'admin:tasks_asmtask_changelist' %}" class="btn-back">
+                    <span>Back</span>
+                </a>
+            </div>
+        </div>
+    </form>
+
+    <!-- Kanban Board -->
+    <div class="kanban-container">
+        {% for status_label in status_columns %}
+            <div class="kanban-column">
+                <div class="column-header">
+                    <h3 class="column-title">{{ status_label|capfirst }}</h3>
+                </div>
+                
+                <div class="tasks-list">
+                    {% for task in tasks %}
+                        {% if task.status == status_label %}
+                        <div class="task-card">
+                            <div class="card-content">
+                                <h4 class="task-title">{{ task.title }}</h4>
+                                
+                                <div class="task-info">
+                                    <div class="info-row">
+                                        <svg class="info-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                                            <circle cx="12" cy="7" r="4"></circle>
+                                        </svg>
+                                        <span>{{ task.asm.user.get_full_name }}</span>
+                                    </div>
+                                    
+                                    <div class="info-row">
+                                        <svg class="info-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                                            <circle cx="9" cy="7" r="4"></circle>
+                                            <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                                            <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                                        </svg>
+                                        <span>{{ task.zone_manager.user.get_full_name }}</span>
+                                    </div>
+                                    
+                                    <div class="info-row">
+                                        <svg class="info-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
+                                        </svg>
+                                        <span>{% if task.category %}{{ task.category.name }}{% else %}N/A{% endif %}</span>
+                                    </div>
+                                </div>
+                                
+                                <div class="task-dates">
+                                    <div class="date-badge">
+                                        <svg class="date-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <circle cx="12" cy="12" r="10"></circle>
+                                            <polyline points="12 6 12 12 16 14"></polyline>
+                                        </svg>
+                                        <span>{{ task.start_date }}</span>
+                                    </div>
+                                    <div class="date-divider">→</div>
+                                    <div class="date-badge">
+                                        <svg class="date-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <circle cx="12" cy="12" r="10"></circle>
+                                            <polyline points="12 6 12 12 16 14"></polyline>
+                                        </svg>
+                                        <span>{{ task.end_date }}</span>
+                                    </div>
+                                </div>
+                                
+                                <div class="status-badge status-{{ task.status }}">
+                                    {{ task.status|capfirst }}
+                                </div>
+                            </div>
+                        </div>
+                        {% endif %}
+                    {% endfor %}
+                    
+                    {% if not tasks %}
+                        <div class="empty-state">
+                            <svg class="empty-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <line x1="12" y1="8" x2="12" y2="12"></line>
+                                <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                            </svg>
+                            <p>No tasks</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+.task-board-wrapper {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #f5f7fa 0%, #e8ecf1 100%);
+    padding: 32px;
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+}
+
+.board-header {
+    margin-bottom: 28px;
+}
+
+.board-title {
+    font-size: 34px;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    color: #1d1d1f;
+    background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.filter-panel {
+    margin-bottom: 32px;
+}
+
+.filter-glass {
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    border-radius: 20px;
+    padding: 24px;
+    border: 1px solid rgba(255, 255, 255, 0.8);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    align-items: flex-end;
+}
+
+.filter-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    flex: 1;
+    min-width: 160px;
+}
+
+.filter-label {
+    font-size: 13px;
+    font-weight: 600;
+    color: #6e6e73;
+    letter-spacing: -0.1px;
+}
+
+.filter-input,
+.filter-select {
+    padding: 12px 16px;
+    border-radius: 12px;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    background: rgba(255, 255, 255, 0.9);
+    font-size: 15px;
+    color: #1d1d1f;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    outline: none;
+}
+
+.filter-input:focus,
+.filter-select:focus {
+    border-color: #007aff;
+    background: #ffffff;
+    box-shadow: 0 0 0 4px rgba(0, 122, 255, 0.1);
+}
+
+.filter-input:hover,
+.filter-select:hover {
+    border-color: rgba(0, 0, 0, 0.15);
+}
+
+.filter-actions {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+}
+
+.btn-filter,
+.btn-back {
+    padding: 12px 24px;
+    border-radius: 12px;
+    font-size: 15px;
+    font-weight: 600;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.btn-filter {
+    background: linear-gradient(135deg, #007aff 0%, #0051d5 100%);
+    color: white;
+    box-shadow: 0 4px 16px rgba(0, 122, 255, 0.3);
+}
+
+.btn-filter:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0, 122, 255, 0.4);
+}
+
+.btn-filter:active {
+    transform: translateY(0);
+}
+
+.btn-back {
+    background: rgba(0, 0, 0, 0.05);
+    color: #1d1d1f;
+}
+
+.btn-back:hover {
+    background: rgba(0, 0, 0, 0.08);
+    transform: translateY(-2px);
+}
+
+.kanban-container {
+    display: flex;
+    gap: 24px;
+    overflow-x: auto;
+    padding-bottom: 24px;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(0, 0, 0, 0.2) transparent;
+}
+
+.kanban-container::-webkit-scrollbar {
+    height: 8px;
+}
+
+.kanban-container::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.kanban-container::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 8px;
+}
+
+.kanban-column {
+    min-width: 320px;
+    flex-shrink: 0;
+}
+
+.column-header {
+    background: rgba(255, 255, 255, 0.6);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    border-radius: 16px;
+    padding: 16px 20px;
+    margin-bottom: 16px;
+    border: 1px solid rgba(255, 255, 255, 0.8);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.column-title {
+    font-size: 17px;
+    font-weight: 700;
+    color: #1d1d1f;
+    letter-spacing: -0.3px;
+}
+
+.tasks-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    min-height: 100px;
+}
+
+.task-card {
+    background: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    border-radius: 18px;
+    border: 1px solid rgba(255, 255, 255, 0.9);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    cursor: pointer;
+    overflow: hidden;
+}
+
+.task-card:hover {
+    transform: translateY(-4px) scale(1.02);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.12);
+    border-color: rgba(0, 122, 255, 0.3);
+}
+
+.card-content {
+    padding: 18px;
+}
+
+.task-title {
+    font-size: 16px;
+    font-weight: 700;
+    color: #1d1d1f;
+    margin-bottom: 14px;
+    letter-spacing: -0.2px;
+    line-height: 1.3;
+}
+
+.task-info {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 14px;
+}
+
+.info-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    color: #6e6e73;
+}
+
+.info-icon {
+    width: 16px;
+    height: 16px;
+    color: #86868b;
+    flex-shrink: 0;
+}
+
+.task-dates {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 12px;
+    padding: 10px;
+    background: rgba(0, 0, 0, 0.03);
+    border-radius: 10px;
+}
+
+.date-badge {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    color: #6e6e73;
+    font-weight: 500;
+}
+
+.date-icon {
+    width: 14px;
+    height: 14px;
+    color: #86868b;
+}
+
+.date-divider {
+    color: #d2d2d7;
+    font-weight: 300;
+}
+
+.status-badge {
+    display: inline-block;
+    padding: 6px 14px;
+    border-radius: 10px;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+    text-transform: uppercase;
+}
+
+.status-pending {
+    background: linear-gradient(135deg, #ffeaa7 0%, #fdcb6e 100%);
+    color: #d63031;
+}
+
+.status-in_progress {
+    background: linear-gradient(135deg, #74b9ff 0%, #0984e3 100%);
+    color: #ffffff;
+}
+
+.status-completed {
+    background: linear-gradient(135deg, #55efc4 0%, #00b894 100%);
+    color: #00695c;
+}
+
+.status-cancelled {
+    background: linear-gradient(135deg, #fab1a0 0%, #e17055 100%);
+    color: #ffffff;
+}
+
+.status-hold {
+    background: linear-gradient(135deg, #dfe6e9 0%, #b2bec3 100%);
+    color: #2d3436;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 40px 20px;
+    color: #86868b;
+}
+
+.empty-icon {
+    width: 48px;
+    height: 48px;
+    margin: 0 auto 12px;
+    opacity: 0.4;
+}
+
+.empty-state p {
+    font-size: 14px;
+    font-weight: 500;
+}
+
+@media (max-width: 768px) {
+    .task-board-wrapper {
+        padding: 20px;
+    }
+    
+    .board-title {
+        font-size: 28px;
+    }
+    
+    .filter-glass {
+        flex-direction: column;
+    }
+    
+    .filter-group {
+        width: 100%;
+    }
+    
+    .filter-actions {
+        width: 100%;
+    }
+    
+    .btn-filter,
+    .btn-back {
+        flex: 1;
+    }
+    
+    .kanban-column {
+        min-width: 280px;
+    }
+}
+</style>
+{% endblock %}

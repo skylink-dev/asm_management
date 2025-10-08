@@ -191,3 +191,4 @@ class ASMDailyTargetAdmin(admin.ModelAdmin):
         )
 
     targets_achievements_table.short_description = "ZM vs ASM Targets & Achievements"
+
